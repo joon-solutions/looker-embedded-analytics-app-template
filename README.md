@@ -7,6 +7,8 @@ The goal of this repository is to showcase how to implement a simple Embedded An
 - [iFrame] Embedding a looker dashboard using [Looker Embed SDK](https://developers.looker.com/embed/embed-sdk)
 - [API] Using [Looker SDK](https://www.npmjs.com/package/@looker/sdk) to send custom queries to your Looker instance, and display results using custom visualizations
 
+To view a Looker Embedded Analytics demo derived from this app template in action, please see & register **[here](https://demogoogle.y3ti.com/demo/lookerapp)**
+
 ## Features Overview
 
 ### Simple Dashboard Embedding
