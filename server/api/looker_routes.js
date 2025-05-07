@@ -14,18 +14,19 @@ import {
  * @param {EmbedUser} user Embed User object (from user.json)
  * @param {string} prefix Prefix for the routes URL
  */
-export const addRoutes = (app, user, prefix) => {
+export const addRoutes = (app, userProvider, prefix) => {
   app.use(bodyParser.json())
 
   app.use(
     cookieSession({
-      maxAge: user.session_length * 1000,
+      maxAge: 3600 * 1000, // Use a default session length
       name: 'embed_session',
       secret: 'abcd'
     })
   )
 
   app.use(function (req, _res, next) {
+    const user = typeof userProvider === 'function' ? userProvider() : userProvider
     if (req.session?.external_user_id !== user.external_user_id) {
       req.session.external_user_id = user.external_user_id
       req.session.session_reference_token = undefined
@@ -41,6 +42,7 @@ export const addRoutes = (app, user, prefix) => {
 
   app.get(prefix + '/acquire-embed-session', async function (req, res) {
     try {
+      const user = typeof userProvider === 'function' ? userProvider() : userProvider
       const current_session_reference_token =
         req.session && req.session.session_reference_token
 

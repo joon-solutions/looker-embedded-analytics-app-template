@@ -1,15 +1,40 @@
 import express from 'express'
 import path from 'path'
 import cors from 'cors'
+import { createRequire } from 'module'
 
-import user from './user.json' assert { type: 'json' }
+// Create a require function
+const require = createRequire(import.meta.url)
+// Use require to import JSON as a template
+const defaultUser = require('./user.json')
+
 import { addRoutes } from './api/looker_routes.js'
 
 const app = express()
 app.use(cors())
+app.use(express.json())
+
+// Global variable to store the current user
+let currentUser = {...defaultUser}
+
+// Endpoint to receive Google auth data from frontend
+app.post('/api/set-user', (req, res) => {
+  const { sub, given_name, family_name } = req.body
+  
+  // Update the user object with Google data
+  currentUser = {
+    ...defaultUser,
+    external_user_id: sub || defaultUser.external_user_id,
+    first_name: given_name || defaultUser.first_name,
+    last_name: family_name || defaultUser.last_name
+  }
+  
+  res.json({ success: true })
+})
 
 // Serve all Looker routes behind a `/api` prefix
-addRoutes(app, user, '/api')
+// Use a function that always references the current user
+addRoutes(app, () => currentUser, '/api')
 
 // Serve the built app at the root URL
 app.use(express.static('../build'))

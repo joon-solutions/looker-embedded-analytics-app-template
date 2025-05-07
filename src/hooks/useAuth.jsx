@@ -23,6 +23,30 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(
     async (data) => {
+      // First, send Google data to your backend
+      if (data && !data.mocked) {
+        try {
+          const response = await fetch('/api/set-user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sub: data.sub,
+              given_name: data.given_name,
+              family_name: data.family_name,
+            }),
+          })
+          
+          if (!response.ok) {
+            console.error('Failed to set user on backend')
+          }
+        } catch (error) {
+          console.error('Error setting user on backend:', error)
+        }
+      }
+      
+      // Then continue with existing login flow
       setUser(data)
       navigate('/')
     },

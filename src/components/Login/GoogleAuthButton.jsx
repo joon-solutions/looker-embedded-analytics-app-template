@@ -41,9 +41,20 @@ const GoogleAuthButton = () => {
 
   const handleCredentialResponse = useCallback(
     (response) => {
-      const parsedToken = parseJwt(response.credential)
-      if (parsedToken) {
-        login(parsedToken)
+      // Decode the JWT token from the credential
+      const decodedToken = parseJwt(response.credential)
+      console.log('Decoded Google token:', decodedToken)
+      
+      if (decodedToken) {
+        // Extract the fields we need for our backend
+        const userData = {
+          sub: decodedToken.sub,
+          given_name: decodedToken.given_name,
+          family_name: decodedToken.family_name,
+        }
+        
+        console.log('User data for login:', userData)
+        login(userData)
       }
     },
     [login]
